@@ -1,0 +1,20 @@
+﻿language: go
+go:
+  - "1.10.x"
+
+before_deploy:
+  - go get -u github.com/laher/goxc
+  - mkdir -p $TRAVIS_BUILD_DIR/dist
+  - goxc -d=$TRAVIS_BUILD_DIR/dist -bc="linux windows darwin netbsd freebsd openbsd" -tasks=clean-destination,xc,archive,rmbin
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: "pfAz4d6fCwQKPFw7CxruOAiD3Z/jmd9olQ2wUqYzGoXyQEE/HRL9bD9mpJknpHZf9lL+HweiYXFgfT1f2Rsm//+Wc726w0bwknpovt+8QkvOE37IkMDHCuSDWLZsA+xNAub726QInaKWn1h+GHl9z1+9hzjoinhZu8vSgSZHdhcnmuMLH3NWGug1tBPGYkaDXPbBhW/HHsmN81t3zZW40msUW/pHC/nmmlr9hxks4gmCfvFCeQTPbu/4j6w4IGTHgeUiQ/uXGA+W3s2zOFzNDpCUtWnL8ugiLkQE9751QRV8tHwQPpqMsNdcb0dOQxb1vn14TNWzXfWMK+D2/GDYsa+18fmLGt9tBoB+bg5Us9LLSQmcCQltevl29DXhBM8HBMFfILRu+zb3t4P2+KHslFTjEPIrUpgR7LbE3IfenC9cvsKLCYPRZqslIG9sZo0nFjep+9NEwquXx3sn9bP0A7fIybepLSjXXeJLxTQuyidQuLDYeUlhwkTz1wdxBlA8PmS3XDDwpgN0F8L4zWS7emAJG6Ulm2JXUqdyrr6OlB0FnCoGTAwTaVKWVoE6Nb86QvTQDQcddp9FtapDiQL4Go9nJhQYGkIy3tdDnGtQ9VHoXN/OaEZQcFpLH7KyGDyO96pm2T32rtfTQMj78YSwTDJsZtKlU/5hiI5KYH9kOiU="
+  file_glob: true
+  file: "$TRAVIS_BUILD_DIR/dist/**/*.{tar.gz,zip}"
+  on:
+    tags: true
+    all_branches: true
+    condition: "$TRAVIS_TAG =~ ^v[0-9].*$"
